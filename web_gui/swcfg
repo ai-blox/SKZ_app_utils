@@ -63,7 +63,7 @@ if isinstance(interface, int):
 	print "No Device Found!"
 	exit()
 
-sysfs	= "/sys/class/net/"+ interface
+sysfs	= "/sys/bus/i2c/devices/0-005f"
 sw	= sysfs + "/sw"
 
 ############## Set/Get sysfs entries for sw ####################
@@ -122,7 +122,7 @@ def	mdio_access(GetSet, phy_id, reg):
 ## return: returns the shell output
 
 def	ksz_access(GetSet, reg):
-	proc = subprocess.Popen("/usr/sbin/regs_bin spi1.0 ", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
+	proc = subprocess.Popen("/usr/sbin/regs_bin 0-005f ", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
 	if GetSet == "get":
 		proc.stdin.write("r " + reg)
 		(out, err) = proc.communicate()

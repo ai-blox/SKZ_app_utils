@@ -325,7 +325,7 @@ if isinstance(interface, int):
 	print "No Device Found!"
 	exit()
 
-sysfs	= "/sys/class/net/"+ interface
+sysfs = "/sys/bus/i2c/devices/0-005f"
 sw	= sysfs + "/sw"
 
 ##############################################################################################################################################
