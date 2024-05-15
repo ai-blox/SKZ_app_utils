@@ -197,6 +197,7 @@ static int determine_reg_size(void)
 			fixed_boundary = 1;
 		break;
 	}
+
 	return 0;
 }
 
@@ -216,7 +217,7 @@ static void print_help(void)
 	printf("pwm <phyid> <devid> <reg> <val>\n");
 }
 
-static void get_cmd(FILE *fp)
+static void get_cmd(int argc, char *argv[])
 {
 	int count;
 	uint num[14];
@@ -224,28 +225,17 @@ static void get_cmd(FILE *fp)
 	uint data[REGS_COUNT];
 	char cmd[80];
 	char line[80];
-	int cont = 1;
 
 	do {
-		printf("reg> ");
-		if (fgets(line, 80, fp) == NULL)
+		if(argc < 2)
 			break;
-		cmd[0] = '\0';
-		count = sscanf(line,
-			"%s %x %x %x %x %x %x %x %x %x %x %x %x %x", cmd,
-			(unsigned int *) &num[0],
-			(unsigned int *) &num[1],
-			(unsigned int *) &num[2],
-			(unsigned int *) &num[3],
-			(unsigned int *) &num[4],
-			(unsigned int *) &num[5],
-			(unsigned int *) &num[6],
-			(unsigned int *) &num[7],
-			(unsigned int *) &num[8],
-			(unsigned int *) &num[9],
-			(unsigned int *) &num[10],
-			(unsigned int *) &num[11],
-			(unsigned int *) &num[12]);
+
+		strcpy(cmd, argv[2]);
+		count = argc - 2;
+		for(int i = 0; i < (count - 1); i++) {
+			num[i] = strtol(argv[i + 3], NULL, 16);
+		}
+
 		switch (cmd[0]) {
 		case 'r':
 			if (count >= 2) {
@@ -386,24 +376,21 @@ static void get_cmd(FILE *fp)
 		case 'h':
 			print_help();
 			break;
-		case 'q':
-			cont = 0;
-			break;
 		}
-	} while (cont);
+	} while (0);
 }
 
 int main(int argc, char *argv[])
 {
 	char device[80];
 	int rc = 0;
+	int i = 1;
 
 	acc_size = 0;
 	reg_size = 0;
 
 	device[0] = '\0';
 	if (argc > 1) {
-		int i = 1;
 
 		if ('/' == argv[i][0])
 			strncpy(device, argv[i], sizeof(device));
@@ -423,32 +410,18 @@ int main(int argc, char *argv[])
 		}
 		strcat(device, "/registers");
 		++i;
-		if (i < argc) {
-			if ('4' == argv[i][0]) {
-				reg_size = 4;
-				reg_cnt = 8;
-				reg_fmt = "%08x ";
-			} else if ('2' == argv[i][0]) {
-				reg_size = 2;
-				reg_cnt = 8;
-				reg_fmt = "%04x ";
-			} else if ('1' == argv[i][0]) {
-				reg_size = 1;
-				reg_cnt = 16;
-				reg_fmt = "%02x ";
-			}
-		}
 	} else {
 		printf("%s <dev>\n", argv[0]);
 		return 0;
 	}
+
 	fd = open(device, O_RDWR);
 	if (fd < 0)
 		return -1;
 	if (!acc_size)
 		rc = determine_reg_size();
 	if (!rc)
-		get_cmd(stdin);
+		get_cmd(argc, argv);
 	close(fd);
 	return rc;
 }
