@@ -121,27 +121,46 @@ def	mdio_access(GetSet, phy_id, reg):
 ## reg: register address (argv holds reg value in set case )
 ## return: returns the shell output
 
-def	ksz_access(GetSet, reg):
-	proc = subprocess.Popen("/usr/sbin/regs_bin 0-005f ", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
+def	ksz_access(GetSet, reg, size):
+	cmd = "/usr/sbin/regs_bin 0-005f "
+	access = ""
+
+	if size == 1 :
+		access = "b "
+	elif size == 2 :
+		access = "w "
+	elif size == 4 :
+		access = "d "
+	else:
+		access = " "
+
 	if GetSet == "get":
-		proc.stdin.write("r " + reg)
+		cmd =  cmd + "r" + access + reg
+		proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
 		(out, err) = proc.communicate()
-		return (out.split()[2]);
+		return (out.split())[1];
 	elif GetSet == "set":
-		proc.stdin.write("w " + reg + " " + sys.argv[4])
+		cmd = cmd + "w" + access + reg + " " + sys.argv[4]
+		proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
 		return "";
 	else:
 		usage()
 		exit()
+	
+
+def phy_GetSet(GetSet, phy_id, reg) :
+	ksz_phy_base = 0x100
+	ksz_phy_addr = (int(phy_id) << 12) | (ksz_phy_base + int(reg, 16) * 2)
+	return ksz_access(GetSet, hex(ksz_phy_addr), 2);
 
 if sys.argv[1] == "GlobalCfg" :
 	print sysfs_sw_entry(sys.argv[2], sys.argv[3])
 elif sys.argv[1] == "PortCfg" :
 	print sysfs_swx_entry(sys.argv[2], sys.argv[4], sys.argv[3])
 elif sys.argv[1] == "PhyCfg" :
-	print mdio_access(sys.argv[2], sys.argv[3], sys.argv[4])
+	print phy_GetSet(sys.argv[2], sys.argv[3], sys.argv[4])
 elif sys.argv[1] == "SwitchCfg" :
-	print ksz_access(sys.argv[2],sys.argv[3])
+	print ksz_access(sys.argv[2],sys.argv[3], None)
 elif sys.argv[1] == "SystemCfg" :
 	print exe_shell_cmd(sys.argv[2])
 else:
