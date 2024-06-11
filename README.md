@@ -1,11 +1,11 @@
 # SKZ_app_utils
 This is a repo for application utilities for Microchip switch KSZ8567 and other KSZxxxx
 
-I. regs_bin utility
-1. Description
-	This utility is used to read and write KSZ switch registers
+# I. regs_bin utility
+## 1. Description  
+   This utility is used to read and write KSZ switch registers
 
-2. Usage
+## 2. Usage
 	regs_bin <device_name> <operation>
 		+ device_name: is a device file name of the control interface, for example 0-005f for an I2C device on bus 0, slave address 0x5f
 		+ operation: is one of the following options
@@ -18,11 +18,11 @@ I. regs_bin utility
 			ww <reg> <val>                         : write 16-bit data specified by val to address reg
 			wd <reg> <val>                         : write 32-bit data specified by val to address reg
 
-II. web_gui utility
-1. Description
+# II. web_gui utility
+## 1. Description
 	This utility is a web interface to configure KSZ switch
 
-2. Web setup procedure
+## 2. Web setup procedure
 	2.1) Install lighttpd web server
 		$ sudo apt-get install lighttpd
 
