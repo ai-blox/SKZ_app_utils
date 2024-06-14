@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 ##############################################################################################################################################
 import cgi, cgitb
@@ -18,7 +18,7 @@ def	exe_shell_cmd(cmd):
 	proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 	(out, err) = proc.communicate()
 	
-	return out;
+	return str(out, 'utf-8');
 
 ############ Function to get KSZ Switch Interface ####################
 ## return: interface name on success else -1 on failure
@@ -321,8 +321,8 @@ def vlan_info() :
 interface = "eth0"
 
 if isinstance(interface, int):
-	print interface
-	print "No Device Found!"
+	print (interface)
+	print ("No Device Found!")
 	exit()
 
 sysfs = "/sys/bus/i2c/devices/0-005f"
@@ -333,8 +333,8 @@ sw	= sysfs + "/sw"
 
 def	exe_py_cgi():
 	#### ******************** ####
-	print "Content-type: text/html"
-	print ""
+	print ("Content-type: text/html")
+	print ("")
 	#### ******************** ####
 	if CfgType == "DevInfo" :
 		response = exe_shell_cmd("swcfg SwitchCfg get 0x0")
@@ -346,7 +346,7 @@ def	exe_py_cgi():
 	elif CfgType == "SysAuth" :
 		user    = form.getvalue('UserName')
 		passwd  = form.getvalue('UserPasswd')
-		response = exe_shell_cmd("python user_auth.py "+ user + " " +passwd)
+		response = exe_shell_cmd("python3 user_auth.py "+ user + " " +passwd)
 		response = response.strip("\n")
 		# FIXME
 		response += ":NewlineHack"
@@ -531,7 +531,7 @@ def	exe_py_cgi():
 			response = "Port Not Selected!"
 
 	else:
-		print "Invalid Request!"
+		print ("Invalid Request!")
 		exit()
 	#cgi.escape(exe_shell_cmd("ifconfig"))
 
@@ -542,7 +542,7 @@ def	exe_py_cgi():
 form = cgi.FieldStorage()
 CfgType	= form.getvalue("CMD") ## CMD is PostMethod argument to differentiate the request type.
 
-print exe_py_cgi() ## Backend request / response Processing
+print (exe_py_cgi()) ## Backend request / response Processing
 
 exit()
 

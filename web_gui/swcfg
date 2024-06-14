@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ######################################
 import sys
 import subprocess
@@ -6,24 +6,24 @@ import subprocess
 
 ####################### Function to display HELP Menu ##################################
 def	usage():
-	print "############################################# Command Help###################################################################"
-	print "config.py [GlobalCfg | PortCfg | PhyCfg | SwitchCfg | SystemCfg] [get | set | (cmd)] {(Port)} {[(Reg) | (Entry)]} {(value)}"
-	print "To Set/Get Switch Global Configurations"
-	print "config.py GlobalCfg set vlan_table <val>"
-	print "config.py GlobalCfg get vlan_table"
-	print "To Set/Get Switch Port Configurations"
-	print "config.py PortCfg set <PortNum> vid <val>"
-	print "config.py PortCfg get <PortNum> vid"
-	print "To Set/Get PHY Port Configurations"
-	print "config.py PhyCfg set <PortNum> <RegAddr> <val>"
-	print "config.py PhyCfg get <PortNum> <RegAddr>"
-	print "To Set/Get Switch Register"
-	print "config.py SwitchCfg set <RegAddr> <val>"
-	print "config.py SwitchCfg get <RegAddr>"
-	print "To Set/Get System configurations"
-	print "config.py SystemCfg \"ifconfig eth0 up\""
-	print "config.py SystemCfg \"ifconfig eth0\""
-	print "#############################################################################################################################"
+	print ("############################################# Command Help###################################################################")
+	print ("config.py [GlobalCfg | PortCfg | PhyCfg | SwitchCfg | SystemCfg] [get | set | (cmd)] {(Port)} {[(Reg) | (Entry)]} {(value)}")
+	print ("To Set/Get Switch Global Configurations")
+	print ("config.py GlobalCfg set vlan_table <val>")
+	print ("config.py GlobalCfg get vlan_table")
+	print ("To Set/Get Switch Port Configurations")
+	print ("config.py PortCfg set <PortNum> vid <val>")
+	print ("config.py PortCfg get <PortNum> vid")
+	print ("To Set/Get PHY Port Configurations")
+	print ("config.py PhyCfg set <PortNum> <RegAddr> <val>")
+	print ("config.py PhyCfg get <PortNum> <RegAddr>")
+	print ("To Set/Get Switch Register")
+	print ("config.py SwitchCfg set <RegAddr> <val>")
+	print ("config.py SwitchCfg get <RegAddr>")
+	print ("To Set/Get System configurations")
+	print ("config.py SystemCfg \"ifconfig eth0 up\"")
+	print ("config.py SystemCfg \"ifconfig eth0\"")
+	print ("#############################################################################################################################")
 	return;
 
 ################# Function to execute Shell Commands ###########################
@@ -34,7 +34,7 @@ def	exe_shell_cmd(cmd):
 	proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
 	(out, err) = proc.communicate()
 	
-	return out;
+	return str(out, 'utf-8');
 
 ################# Function to get KSZ Interface ###########################
 ## return: On Success KSZ interface Name, failure -1
@@ -60,7 +60,7 @@ if len(sys.argv) == 1:
 interface = "eth0"
 
 if isinstance(interface, int):
-	print "No Device Found!"
+	print ("No Device Found!")
 	exit()
 
 sysfs	= "/sys/bus/i2c/devices/0-005f"
@@ -138,7 +138,7 @@ def	ksz_access(GetSet, reg, size):
 		cmd =  cmd + "r" + access + reg
 		proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
 		(out, err) = proc.communicate()
-		return (out.split())[1];
+		return str((out.split())[1], 'utf-8');
 	elif GetSet == "set":
 		cmd = cmd + "w" + access + reg + " " + sys.argv[4]
 		proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE, shell=True)
@@ -154,16 +154,16 @@ def phy_GetSet(GetSet, phy_id, reg) :
 	return ksz_access(GetSet, hex(ksz_phy_addr), 2);
 
 if sys.argv[1] == "GlobalCfg" :
-	print sysfs_sw_entry(sys.argv[2], sys.argv[3])
+	print (sysfs_sw_entry(sys.argv[2], sys.argv[3]))
 elif sys.argv[1] == "PortCfg" :
-	print sysfs_swx_entry(sys.argv[2], sys.argv[4], sys.argv[3])
+	print (sysfs_swx_entry(sys.argv[2], sys.argv[4], sys.argv[3]))
 elif sys.argv[1] == "PhyCfg" :
-	print phy_GetSet(sys.argv[2], sys.argv[3], sys.argv[4])
+	print (phy_GetSet(sys.argv[2], sys.argv[3], sys.argv[4]))
 elif sys.argv[1] == "SwitchCfg" :
-	print ksz_access(sys.argv[2],sys.argv[3], None)
+	print (ksz_access(sys.argv[2],sys.argv[3], None))
 elif sys.argv[1] == "SystemCfg" :
-	print exe_shell_cmd(sys.argv[2])
+	print (exe_shell_cmd(sys.argv[2]))
 else:
-	print "\n\nInvalid Request\n\n"
+	print ("\n\nInvalid Request\n\n")
 	usage()
 	exit ()
